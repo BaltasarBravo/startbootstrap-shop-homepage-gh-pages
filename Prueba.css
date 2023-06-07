@@ -1,0 +1,78 @@
+/* Estilo mejorado */
+
+/* Colores */
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --background-color: #f8f9fa;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: var(--background-color);
+  margin: 0;
+  padding: 20px;
+}
+
+h2 {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+}
+
+#itemSelect {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid var(--secondary-color);
+  border-radius: 4px;
+}
+
+#quantityInput {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid var(--secondary-color);
+  border-radius: 4px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 14px;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: darken(var(--primary-color), 10%);
+}
+
+#selectedItems {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--secondary-color);
+}
+
+h3 {
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+#createPdf {
+  margin-top: 30px;
+}
+
+
+
+
+

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./Prueba.css">
+    <title>Document</title>
+    
+</head>
+<body>
+    
+  <h2>Lista de Articulos</h2>
+
+  <select id="itemSelect"></select>
+  <input type="number" id="quantityInput" placeholder="Amount" min="1" value="1">
+  <button onclick="addItem()">Agregar articulo</button>
+
+  <div id="selectedItems">
+    <h3>Articulos seleccionados:</h3>
+    <ul id="itemList"></ul>
+  </div>
+
+  <button id="createPdf">Generar PDF y enviar mail</button>
+
+  <a href="./historial.html">Ver Historial de Pedidos</a>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="xlsx.js"></script>
+  <script src="./Prueba.js"></script>
+</body>
+</html>
