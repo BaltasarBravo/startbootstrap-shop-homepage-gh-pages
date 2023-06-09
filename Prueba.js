@@ -487,12 +487,12 @@ function addItem() {
     listItem.appendChild(nameSpan);
 
     var amountSpan = document.createElement("span");
-    amountSpan.textContent = "Amount: " + selectedAmount;
+    amountSpan.textContent = "Cantidad: " + selectedAmount;
     listItem.appendChild(amountSpan);
 
     var addButton = createButton("+", function () {
       selectedAmount++;
-      amountSpan.textContent = "Amount: " + selectedAmount;
+      amountSpan.textContent = "Cantidad: " + selectedAmount;
       selectedItem.amount = selectedAmount;
     });
     listItem.appendChild(addButton);
@@ -500,17 +500,17 @@ function addItem() {
     var subtractButton = createButton("-", function () {
       if (selectedAmount > 1) {
         selectedAmount--;
-        amountSpan.textContent = "Amount: " + selectedAmount;
+        amountSpan.textContent = "Cantidad: " + selectedAmount;
         selectedItem.amount = selectedAmount;
       }
     });
     listItem.appendChild(subtractButton);
 
     var editButton = createButton("Edit", function () {
-      var newAmount = prompt("Enter the new amount:");
+      var newAmount = prompt("Ingrese una nueva cantidad:");
       if (newAmount !== null && !isNaN(newAmount) && parseInt(newAmount) >= 1) {
         selectedAmount = parseInt(newAmount);
-        amountSpan.textContent = "Amount: " + selectedAmount;
+        amountSpan.textContent = "Cantidad: " + selectedAmount;
         selectedItem.amount = selectedAmount;
       }
     });
