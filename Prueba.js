@@ -556,18 +556,18 @@ function generatePDF() {
     for (var i = 0; i < itemList.length; i++) {
       var name = itemList[i].getElementsByTagName("span")[0].textContent;
       var amount = parseInt(
-        itemList[i].getElementsByTagName("span")[1].textContent.replace("Amount: ", "")
+        itemList[i].getElementsByTagName("span")[1].textContent.replace("Cantidad: ", "")
       );
       selectedItems.push({ name: name, amount: amount });
     }
 
     var doc = new jspdf.jsPDF();
     doc.setFontSize(20);
-    doc.text("Selected Items:", 10, 20);
+    doc.text("Artículos seleccionados:", 10, 20);
 
     var yPos = 30;
     selectedItems.forEach((item, index) => {
-      var text = `${index + 1}. ${item.name} (Amount: ${item.amount})`;
+      var text = `${index + 1}. ${item.name} (Cantidad: ${item.amount})`;
       doc.setFontSize(14);
       doc.text(text, 10, yPos);
       yPos += 10;
@@ -581,18 +581,13 @@ function generatePDF() {
       text: "El pedido ha sido procesado con éxito.",
     });
 
-    // var historyList = document.getElementById("historyList");
-    // var historyItem = document.createElement("li");
-    // historyItem.textContent = JSON.stringify(selectedItems);
-    // historyList.appendChild(historyItem);
-
-    // Limpiar el DOM nuevamente después de agregar el pedido al historial
+    // Clear the item list after generating the PDF
     var itemList = document.getElementById("itemList");
     while (itemList.firstChild) {
       itemList.removeChild(itemList.firstChild);
     }
   } else {
-    Swal.fire("Error", "Seleccione al menos un articulo", "error");
+    Swal.fire("Error", "Seleccione al menos un artículo", "error");
   }
 }
 

@@ -232,3 +232,17 @@ body {
   word-break: break-all;
 }
 
+/* Ajustes adicionales para mejorar la ubicación de los elementos */
+
+/* Alinear el contenido del elemento de lista */
+#itemList li {
+  display: flex;
+  align-items: center;
+}
+
+/* Espacio entre los elementos del elemento de lista */
+#itemList li > * {
+  margin-right: 10px;
+}
+
+
