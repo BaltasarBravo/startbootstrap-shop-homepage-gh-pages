@@ -402,49 +402,45 @@
 
 
 // Variable para almacenar los artículos seleccionados
-var items = [];
+let items = [];
 
 // Variable para almacenar las órdenes generadas
-var orders = [];
+let orders = [];
 
 // Función para cargar los nombres de los artículos desde el archivo Excel
 function loadItemsFromExcel() {
   // Ruta del archivo Excel
-  var file = 'Consultas externas Mis Consultas Externas Emporio Lista Minorista ConIVA y Proveedor.xlsx';
+  const file = 'Consultas externas Mis Consultas Externas Emporio Lista Minorista ConIVA y Proveedor.xlsx';
 
   // Carga del archivo Excel
   fetch(file)
-    .then(function (response) {
-      return response.arrayBuffer();
-    })
-    .then(function (arraybuffer) {
-      var data = new Uint8Array(arraybuffer);
-      var workbook = XLSX.read(data, { type: 'array' });
+    .then(response => response.arrayBuffer())
+    .then(arraybuffer => {
+      const data = new Uint8Array(arraybuffer);
+      const workbook = XLSX.read(data, { type: 'array' });
 
       // Obtención del nombre de la primera hoja
-      var firstSheetName = workbook.SheetNames[0];
-      var worksheet = workbook.Sheets[firstSheetName];
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
 
       // Obtención del rango de celdas con los nombres de los artículos (suponiendo que están en la columna D)
-      var range = XLSX.utils.decode_range(worksheet['!ref']);
-      var items = [];
+      const range = XLSX.utils.decode_range(worksheet['!ref']);
+      const items = [];
 
       // Recorrido de las celdas y extracción de los nombres de los artículos
-      for (var R = range.s.r; R <= range.e.r; ++R) {
-        var cellAddress = XLSX.utils.encode_cell({ r: R, c: 3 }); // Columna D
-        var cell = worksheet[cellAddress];
+      for (let R = range.s.r; R <= range.e.r; ++R) {
+        const cellAddress = XLSX.utils.encode_cell({ r: R, c: 3 }); // Columna D
+        const cell = worksheet[cellAddress];
         if (cell && cell.t === 's') {
           items.push(cell.v);
         }
       }
 
       // Ordenamiento alfabético de los nombres de los artículos
-      items.sort(function (a, b) {
-        return a.localeCompare(b);
-      });
+      items.sort((a, b) => a.localeCompare(b));
 
       // Obtención del select element
-      var selectElement = document.getElementById('itemSelect');
+      const selectElement = document.getElementById('itemSelect');
 
       // Eliminación de las opciones existentes
       while (selectElement.firstChild) {
@@ -452,14 +448,14 @@ function loadItemsFromExcel() {
       }
 
       // Creación de las opciones del select con los nombres de los artículos
-      items.forEach(function (item, index) {
-        var option = document.createElement('option');
+      items.forEach((item, index) => {
+        const option = document.createElement('option');
         option.value = index;
         option.textContent = item;
         selectElement.appendChild(option);
       });
     })
-    .catch(function (error) {
+    .catch(error => {
       console.log('Error al cargar el archivo Excel:', error);
     });
 }
@@ -467,41 +463,38 @@ function loadItemsFromExcel() {
 // Llamar a la función para cargar los nombres de los artículos desde el archivo Excel
 loadItemsFromExcel();
 
-// Variable para almacenar los artículos seleccionados
-var items = [];
-
 // Function to handle item selection
 function addItem() {
-  var selectElement = document.getElementById("itemSelect");
-  var quantityInput = document.getElementById("quantityInput");
-  var itemList = document.getElementById("itemList");
-  var selectedIndex = selectElement.value;
-  var selectedAmount = parseInt(quantityInput.value);
+  const selectElement = document.getElementById("itemSelect");
+  const quantityInput = document.getElementById("quantityInput");
+  const itemList = document.getElementById("itemList");
+  const selectedIndex = selectElement.value;
+  let selectedAmount = parseInt(quantityInput.value);
 
   if (selectedIndex !== "" && selectedAmount >= 1) {
-    var selectedItem = {
+    const selectedItem = {
       name: selectElement.options[selectedIndex].textContent,
       amount: selectedAmount
     };
 
-    var listItem = document.createElement("li");
+    const listItem = document.createElement("li");
 
-    var nameSpan = document.createElement("span");
+    const nameSpan = document.createElement("span");
     nameSpan.textContent = selectedItem.name;
     listItem.appendChild(nameSpan);
 
-    var amountSpan = document.createElement("span");
+    const amountSpan = document.createElement("span");
     amountSpan.textContent = "Cantidad: " + selectedAmount;
     listItem.appendChild(amountSpan);
 
-    var addButton = createButton("+", function () {
+    const addButton = createButton("+", () => {
       selectedAmount++;
       amountSpan.textContent = "Cantidad: " + selectedAmount;
       selectedItem.amount = selectedAmount;
     });
     listItem.appendChild(addButton);
 
-    var subtractButton = createButton("-", function () {
+    const subtractButton = createButton("-", () => {
       if (selectedAmount > 1) {
         selectedAmount--;
         amountSpan.textContent = "Cantidad: " + selectedAmount;
@@ -510,8 +503,8 @@ function addItem() {
     });
     listItem.appendChild(subtractButton);
 
-    var editButton = createButton("Edit", function () {
-      var newAmount = prompt("Ingrese una nueva cantidad:");
+    const editButton = createButton("Edit", () => {
+      const newAmount = prompt("Ingrese una nueva cantidad:");
       if (newAmount !== null && !isNaN(newAmount) && parseInt(newAmount) >= 1) {
         selectedAmount = parseInt(newAmount);
         amountSpan.textContent = "Cantidad: " + selectedAmount;
@@ -520,9 +513,9 @@ function addItem() {
     });
     listItem.appendChild(editButton);
 
-    var deleteButton = createButton("Delete", function () {
+    const deleteButton = createButton("Delete", () => {
       itemList.removeChild(listItem);
-      var index = items.indexOf(selectedItem);
+      const index = items.indexOf(selectedItem);
       if (index !== -1) {
         items.splice(index, 1);
       }
@@ -541,7 +534,7 @@ function addItem() {
 
 // Helper function to create buttons
 function createButton(text, onClick) {
-  var button = document.createElement("button");
+  const button = document.createElement("button");
   button.textContent = text;
   button.addEventListener("click", onClick);
   return button;
@@ -551,32 +544,30 @@ function createButton(text, onClick) {
 document.getElementById("createPdf").addEventListener("click", function () {
   generatePDF(); // Generar PDF de la orden actual
   showOrdersList(); // Mostrar la lista de órdenes actualizada
-  clearItems(); // Limpiar la lista de artículos seleccionados
+  clearItems();
 });
 
-let generatedPDF = null;
-
-// Function to generate PDF and download
+// Function to generate PDF and store it in the orders array
 function generatePDF() {
-  var selectedItems = [];
-  var itemList = document.getElementById("itemList").getElementsByTagName("li");
+  const selectedItems = [];
+  const itemList = document.getElementById("itemList").getElementsByTagName("li");
 
   if (itemList.length > 0) {
-    for (var i = 0; i < itemList.length; i++) {
-      var name = itemList[i].getElementsByTagName("span")[0].textContent;
-      var amount = parseInt(
+    for (let i = 0; i < itemList.length; i++) {
+      const name = itemList[i].getElementsByTagName("span")[0].textContent;
+      const amount = parseInt(
         itemList[i].getElementsByTagName("span")[1].textContent.replace("Cantidad: ", "")
       );
       selectedItems.push({ name: name, amount: amount });
     }
 
-    var doc = new jspdf.jsPDF();
+    const doc = new jspdf.jsPDF();
     doc.setFontSize(20);
     doc.text("Artículos seleccionados:", 10, 20);
 
-    var yPos = 30;
+    let yPos = 30;
     selectedItems.forEach((item, index) => {
-      var text = `${index + 1}. ${item.name} (Cantidad: ${item.amount})`;
+      const text = `${index + 1}. ${item.name} (Cantidad: ${item.amount})`;
       doc.setFontSize(14);
       doc.text(text, 10, yPos);
       yPos += 10;
@@ -584,8 +575,6 @@ function generatePDF() {
 
     // Store the generated PDF in the orders array
     orders.push(doc.output('blob'));
-
-    clearItems();
 
     Swal.fire({
       icon: "success",
@@ -599,47 +588,38 @@ function generatePDF() {
 
 // Function to clear the list of selected items
 function clearItems() {
-  var itemList = document.getElementById("itemList");
+  const itemList = document.getElementById("itemList");
   while (itemList.firstChild) {
     itemList.removeChild(itemList.firstChild);
   }
   items = []; // Reiniciar el arreglo de artículos seleccionados
 }
 
-
-
-
 // Función para mostrar el listado de órdenes generadas
 function showOrdersList() {
-  var ordersList = document.getElementById('ordersList');
+  const ordersList = document.getElementById('ordersList');
   ordersList.innerHTML = ''; // Limpiar el listado antes de mostrar las órdenes
 
   // Recorrer las órdenes generadas
-  for (var i = 0; i < orders.length; i++) {
-    var order = orders[i];
-
+  orders.forEach((order, index) => {
     // Crear un elemento <li> para cada orden
-    var orderItem = document.createElement('li');
-    orderItem.textContent = 'Orden #' + (i + 1);
+    const orderItem = document.createElement('li');
+    orderItem.textContent = 'Orden #' + (index + 1);
 
     // Crear un botón para descargar el PDF de la orden
-    var downloadButton = createButton('Ver PDF', (function (index) {
-      return function () {
-        // Mostrar el PDF correspondiente a la orden en una nueva pestaña
-        if (orders[index]) {
-          var pdfURL = URL.createObjectURL(orders[index]);
-          window.open(pdfURL);
-        }
-      };
-    })(i)); // Pasar el valor de 'i' como argumento
+    const downloadButton = createButton('Ver PDF', () => {
+      // Mostrar el PDF correspondiente a la orden en una nueva pestaña
+      if (order) {
+        const pdfURL = URL.createObjectURL(order);
+        window.open(pdfURL);
+      }
+    });
 
     // Crear un botón para enviar por correo electrónico la orden
-    var sendEmailButton = createButton('Enviar por correo electrónico', (function (index) {
-      return function () {
-        console.log('Enviar por correo electrónico la orden #' + (index + 1));
-        // Aquí puedes agregar el código para enviar el correo electrónico con el PDF adjunto
-      };
-    })(i)); // Pasar el valor de 'i' como argumento
+    const sendEmailButton = createButton('Enviar por correo electrónico', () => {
+      console.log('Enviar por correo electrónico la orden #' + (index + 1));
+      // Aquí puedes agregar el código para enviar el correo electrónico con el PDF adjunto
+    });
 
     // Agregar los botones al elemento <li>
     orderItem.appendChild(downloadButton);
@@ -647,5 +627,5 @@ function showOrdersList() {
 
     // Agregar el elemento <li> al listado de órdenes
     ordersList.appendChild(orderItem);
-  }
+  });
 }
