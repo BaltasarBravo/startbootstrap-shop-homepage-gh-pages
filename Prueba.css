@@ -245,4 +245,10 @@ body {
   margin-right: 10px;
 }
 
+#buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
 

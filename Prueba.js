@@ -401,7 +401,11 @@
 
 
 
+// Variable para almacenar los artículos seleccionados
+var items = [];
 
+// Variable para almacenar las órdenes generadas
+var orders = [];
 
 // Función para cargar los nombres de los artículos desde el archivo Excel
 function loadItemsFromExcel() {
@@ -544,8 +548,13 @@ function createButton(text, onClick) {
 }
 
 // Event listener for the generate PDF button
-document.getElementById("createPdf").addEventListener("click", generatePDF);
+document.getElementById("createPdf").addEventListener("click", function () {
+  generatePDF(); // Generar PDF de la orden actual
+  showOrdersList(); // Mostrar la lista de órdenes actualizada
+  clearItems(); // Limpiar la lista de artículos seleccionados
+});
 
+let generatedPDF = null;
 
 // Function to generate PDF and download
 function generatePDF() {
@@ -573,26 +582,70 @@ function generatePDF() {
       yPos += 10;
     });
 
-    doc.save("selected_items.pdf");
+    // Store the generated PDF in the orders array
+    orders.push(doc.output('blob'));
+
+    clearItems();
 
     Swal.fire({
       icon: "success",
       title: "¡Pedido generado!",
       text: "El pedido ha sido procesado con éxito.",
     });
-
-    // Clear the item list after generating the PDF
-    var itemList = document.getElementById("itemList");
-    while (itemList.firstChild) {
-      itemList.removeChild(itemList.firstChild);
-    }
   } else {
     Swal.fire("Error", "Seleccione al menos un artículo", "error");
   }
 }
 
+// Function to clear the list of selected items
+function clearItems() {
+  var itemList = document.getElementById("itemList");
+  while (itemList.firstChild) {
+    itemList.removeChild(itemList.firstChild);
+  }
+  items = []; // Reiniciar el arreglo de artículos seleccionados
+}
 
 
 
 
-  
+// Función para mostrar el listado de órdenes generadas
+function showOrdersList() {
+  var ordersList = document.getElementById('ordersList');
+  ordersList.innerHTML = ''; // Limpiar el listado antes de mostrar las órdenes
+
+  // Recorrer las órdenes generadas
+  for (var i = 0; i < orders.length; i++) {
+    var order = orders[i];
+
+    // Crear un elemento <li> para cada orden
+    var orderItem = document.createElement('li');
+    orderItem.textContent = 'Orden #' + (i + 1);
+
+    // Crear un botón para descargar el PDF de la orden
+    var downloadButton = createButton('Ver PDF', (function (index) {
+      return function () {
+        // Mostrar el PDF correspondiente a la orden en una nueva pestaña
+        if (orders[index]) {
+          var pdfURL = URL.createObjectURL(orders[index]);
+          window.open(pdfURL);
+        }
+      };
+    })(i)); // Pasar el valor de 'i' como argumento
+
+    // Crear un botón para enviar por correo electrónico la orden
+    var sendEmailButton = createButton('Enviar por correo electrónico', (function (index) {
+      return function () {
+        console.log('Enviar por correo electrónico la orden #' + (index + 1));
+        // Aquí puedes agregar el código para enviar el correo electrónico con el PDF adjunto
+      };
+    })(i)); // Pasar el valor de 'i' como argumento
+
+    // Agregar los botones al elemento <li>
+    orderItem.appendChild(downloadButton);
+    orderItem.appendChild(sendEmailButton);
+
+    // Agregar el elemento <li> al listado de órdenes
+    ordersList.appendChild(orderItem);
+  }
+}
