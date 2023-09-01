@@ -672,6 +672,7 @@ function repeatOrder(orderIndex) {
     // Agregar los artículos clonados al DOM como si estuvieras generando una orden nueva
     selectedItems.forEach(item => {
       // Crea elementos en el DOM para cada artículo y permite su modificación
+      // Similar a cómo lo haces cuando agregas un artículo inicialmente
       var listItem = document.createElement("li");
 
       var nameSpan = document.createElement("span");
@@ -696,6 +697,7 @@ function repeatOrder(orderIndex) {
       });
       listItem.appendChild(subtractButton);
 
+      // Botón Editar
       var editButton = createButton("Editar", function () {
         const newAmount = prompt("Ingrese una nueva cantidad:");
         if (newAmount !== null && !isNaN(newAmount) && parseInt(newAmount) >= 1) {
@@ -705,17 +707,18 @@ function repeatOrder(orderIndex) {
       });
       listItem.appendChild(editButton);
 
+      // Botón Eliminar
       var deleteButton = createButton("Eliminar", function () {
-        // Elimina el artículo del arreglo de artículos seleccionados
+        itemList.removeChild(listItem);
         const index = items.indexOf(item);
         if (index !== -1) {
           items.splice(index, 1);
         }
-
-        // Elimina el elemento del DOM
-        listItem.parentNode.removeChild(listItem);
       });
       listItem.appendChild(deleteButton);
+
+      // Agrega la clase para activar la animación
+      listItem.classList.add("fade-in");
 
       // Agrega el nuevo elemento al DOM
       var itemList = document.getElementById("itemList");

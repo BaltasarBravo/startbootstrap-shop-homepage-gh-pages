@@ -252,3 +252,19 @@ body {
 }
 
 
+/* Define una clase para la animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px); /* Mueve el elemento hacia arriba */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0); /* Restaura la posición original */
+  }
+}
+
+/* Aplica la animación a los elementos con esta clase */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out; /* Duración y temporización de la animación */
+}
