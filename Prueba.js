@@ -404,8 +404,11 @@
 // Variable para almacenar los artículos seleccionados
 let items = [];
 
-// Variable para almacenar las órdenes generadas
-let orders = [];
+// Arreglo para almacenar los objetos Blob (PDFs) de las órdenes generadas
+const pdfs = [];
+
+// Arreglo para almacenar los objetos JSON de las órdenes generadas
+const orders = [];
 
 // Función para cargar los nombres de los artículos desde el archivo Excel
 function loadItemsFromExcel() {
@@ -414,8 +417,10 @@ function loadItemsFromExcel() {
 
   // Carga del archivo Excel
   fetch(file)
-    .then(response => response.arrayBuffer())
-    .then(arraybuffer => {
+    .then(function (response) {
+      return response.arrayBuffer();
+    })
+    .then(function (arraybuffer) {
       const data = new Uint8Array(arraybuffer);
       const workbook = XLSX.read(data, { type: 'array' });
 
@@ -437,7 +442,9 @@ function loadItemsFromExcel() {
       }
 
       // Ordenamiento alfabético de los nombres de los artículos
-      items.sort((a, b) => a.localeCompare(b));
+      items.sort(function (a, b) {
+        return a.localeCompare(b);
+      });
 
       // Obtención del select element
       const selectElement = document.getElementById('itemSelect');
@@ -448,14 +455,14 @@ function loadItemsFromExcel() {
       }
 
       // Creación de las opciones del select con los nombres de los artículos
-      items.forEach((item, index) => {
+      items.forEach(function (item, index) {
         const option = document.createElement('option');
         option.value = index;
         option.textContent = item;
         selectElement.appendChild(option);
       });
     })
-    .catch(error => {
+    .catch(function (error) {
       console.log('Error al cargar el archivo Excel:', error);
     });
 }
@@ -465,55 +472,55 @@ loadItemsFromExcel();
 
 // Function to handle item selection
 function addItem() {
-  const selectElement = document.getElementById("itemSelect");
-  const quantityInput = document.getElementById("quantityInput");
-  const itemList = document.getElementById("itemList");
+  const selectElement = document.getElementById('itemSelect');
+  const quantityInput = document.getElementById('quantityInput');
+  const itemList = document.getElementById('itemList');
   const selectedIndex = selectElement.value;
   let selectedAmount = parseInt(quantityInput.value);
 
-  if (selectedIndex !== "" && selectedAmount >= 1) {
+  if (selectedIndex !== '' && selectedAmount >= 1) {
     const selectedItem = {
       name: selectElement.options[selectedIndex].textContent,
-      amount: selectedAmount
+      amount: selectedAmount,
     };
 
-    const listItem = document.createElement("li");
+    const listItem = document.createElement('li');
 
-    const nameSpan = document.createElement("span");
+    const nameSpan = document.createElement('span');
     nameSpan.textContent = selectedItem.name;
     listItem.appendChild(nameSpan);
 
-    const amountSpan = document.createElement("span");
-    amountSpan.textContent = "Cantidad: " + selectedAmount;
+    const amountSpan = document.createElement('span');
+    amountSpan.textContent = 'Cantidad: ' + selectedAmount;
     listItem.appendChild(amountSpan);
 
-    const addButton = createButton("+", () => {
+    const addButton = createButton('+', function () {
       selectedAmount++;
-      amountSpan.textContent = "Cantidad: " + selectedAmount;
+      amountSpan.textContent = 'Cantidad: ' + selectedAmount;
       selectedItem.amount = selectedAmount;
     });
     listItem.appendChild(addButton);
 
-    const subtractButton = createButton("-", () => {
+    const subtractButton = createButton('-', function () {
       if (selectedAmount > 1) {
         selectedAmount--;
-        amountSpan.textContent = "Cantidad: " + selectedAmount;
+        amountSpan.textContent = 'Cantidad: ' + selectedAmount;
         selectedItem.amount = selectedAmount;
       }
     });
     listItem.appendChild(subtractButton);
 
-    const editButton = createButton("Edit", () => {
-      const newAmount = prompt("Ingrese una nueva cantidad:");
+    const editButton = createButton('Editar', function () {
+      const newAmount = prompt('Ingrese una nueva cantidad:');
       if (newAmount !== null && !isNaN(newAmount) && parseInt(newAmount) >= 1) {
         selectedAmount = parseInt(newAmount);
-        amountSpan.textContent = "Cantidad: " + selectedAmount;
+        amountSpan.textContent = 'Cantidad: ' + selectedAmount;
         selectedItem.amount = selectedAmount;
       }
     });
     listItem.appendChild(editButton);
 
-    const deleteButton = createButton("Delete", () => {
+    const deleteButton = createButton('Eliminar', function () {
       itemList.removeChild(listItem);
       const index = items.indexOf(selectedItem);
       if (index !== -1) {
@@ -527,54 +534,67 @@ function addItem() {
     items.push(selectedItem);
 
     // Clear selection and quantity input
-    selectElement.value = "";
-    quantityInput.value = "1";
+    selectElement.value = '';
+    quantityInput.value = '1';
   }
 }
 
 // Helper function to create buttons
 function createButton(text, onClick) {
-  const button = document.createElement("button");
+  const button = document.createElement('button');
   button.textContent = text;
-  button.addEventListener("click", onClick);
+  button.addEventListener('click', onClick);
   return button;
 }
 
 // Event listener for the generate PDF button
-document.getElementById("createPdf").addEventListener("click", function () {
+document.getElementById('createPdf').addEventListener('click', function () {
   generatePDF(); // Generar PDF de la orden actual
   showOrdersList(); // Mostrar la lista de órdenes actualizada
-  clearItems();
+  clearItems(); // Limpiar la lista de artículos seleccionados
 });
 
-// Function to generate PDF and store it in the orders array
+let generatedPDF = null;
+
+// Function to generate PDF and download
 function generatePDF() {
-  const selectedItems = [];
-  const itemList = document.getElementById("itemList").getElementsByTagName("li");
+  var selectedItems = [];
+  var itemList = document.getElementById("itemList").getElementsByTagName("li");
 
   if (itemList.length > 0) {
-    for (let i = 0; i < itemList.length; i++) {
-      const name = itemList[i].getElementsByTagName("span")[0].textContent;
-      const amount = parseInt(
+    for (var i = 0; i < itemList.length; i++) {
+      var name = itemList[i].getElementsByTagName("span")[0].textContent;
+      var amount = parseInt(
         itemList[i].getElementsByTagName("span")[1].textContent.replace("Cantidad: ", "")
       );
       selectedItems.push({ name: name, amount: amount });
     }
 
-    const doc = new jspdf.jsPDF();
+    // Convertir la lista de artículos seleccionados a JSON
+    const selectedItemsJSON = JSON.stringify(selectedItems);
+
+    var doc = new jspdf.jsPDF();
     doc.setFontSize(20);
     doc.text("Artículos seleccionados:", 10, 20);
 
-    let yPos = 30;
+    var yPos = 30;
     selectedItems.forEach((item, index) => {
-      const text = `${index + 1}. ${item.name} (Cantidad: ${item.amount})`;
+      var text = `${index + 1}. ${item.name} (Cantidad: ${item.amount})`;
       doc.setFontSize(14);
       doc.text(text, 10, yPos);
       yPos += 10;
     });
 
-    // Store the generated PDF in the orders array
-    orders.push(doc.output('blob'));
+    // Generar el Blob del PDF
+    const pdfBlob = doc.output('blob');
+
+    // Guardar el objeto Blob (PDF) en el arreglo de PDFs
+    pdfs.push(pdfBlob);
+
+    // Guardar la lista de artículos como JSON en el arreglo de órdenes
+    orders.push(selectedItemsJSON);
+
+    clearItems();
 
     Swal.fire({
       icon: "success",
@@ -606,11 +626,11 @@ function showOrdersList() {
     const orderItem = document.createElement('li');
     orderItem.textContent = 'Orden #' + (index + 1);
 
-    // Crear un botón para descargar el PDF de la orden
-    const downloadButton = createButton('Ver PDF', () => {
+    // Crear un botón para ver el PDF de la orden
+    const viewPdfButton = createButton('Ver PDF', () => {
       // Mostrar el PDF correspondiente a la orden en una nueva pestaña
-      if (order) {
-        const pdfURL = URL.createObjectURL(order);
+      if (pdfs[index]) {
+        const pdfURL = URL.createObjectURL(pdfs[index]);
         window.open(pdfURL);
       }
     });
@@ -621,11 +641,90 @@ function showOrdersList() {
       // Aquí puedes agregar el código para enviar el correo electrónico con el PDF adjunto
     });
 
+    // Crear un botón para repetir la orden
+    const repeatOrderButton = createButton('Repetir Orden', () => {
+      // Llamar a la función repeatOrder con el índice de la orden
+      repeatOrder(index);
+    });
+
     // Agregar los botones al elemento <li>
-    orderItem.appendChild(downloadButton);
+    orderItem.appendChild(viewPdfButton);
     orderItem.appendChild(sendEmailButton);
+    orderItem.appendChild(repeatOrderButton);
 
     // Agregar el elemento <li> al listado de órdenes
     ordersList.appendChild(orderItem);
   });
+}
+
+// Función para repetir una orden
+function repeatOrder(orderIndex) {
+  // Obtener la orden actual en formato JSON
+  const selectedOrderJSON = orders[orderIndex];
+
+  // Convertir la orden JSON de vuelta a un objeto JavaScript
+  const selectedItems = JSON.parse(selectedOrderJSON);
+
+  if (Array.isArray(selectedItems)) {
+    // Limpiar la lista de artículos seleccionados en el DOM
+    clearItems();
+
+    // Agregar los artículos clonados al DOM como si estuvieras generando una orden nueva
+    selectedItems.forEach(item => {
+      // Crea elementos en el DOM para cada artículo y permite su modificación
+      var listItem = document.createElement("li");
+
+      var nameSpan = document.createElement("span");
+      nameSpan.textContent = item.name;
+      listItem.appendChild(nameSpan);
+
+      var amountSpan = document.createElement("span");
+      amountSpan.textContent = "Cantidad: " + item.amount;
+      listItem.appendChild(amountSpan);
+
+      var addButton = createButton("+", function () {
+        item.amount++;
+        amountSpan.textContent = "Cantidad: " + item.amount;
+      });
+      listItem.appendChild(addButton);
+
+      var subtractButton = createButton("-", function () {
+        if (item.amount > 1) {
+          item.amount--;
+          amountSpan.textContent = "Cantidad: " + item.amount;
+        }
+      });
+      listItem.appendChild(subtractButton);
+
+      var editButton = createButton("Editar", function () {
+        const newAmount = prompt("Ingrese una nueva cantidad:");
+        if (newAmount !== null && !isNaN(newAmount) && parseInt(newAmount) >= 1) {
+          item.amount = parseInt(newAmount);
+          amountSpan.textContent = "Cantidad: " + item.amount;
+        }
+      });
+      listItem.appendChild(editButton);
+
+      var deleteButton = createButton("Eliminar", function () {
+        // Elimina el artículo del arreglo de artículos seleccionados
+        const index = items.indexOf(item);
+        if (index !== -1) {
+          items.splice(index, 1);
+        }
+
+        // Elimina el elemento del DOM
+        listItem.parentNode.removeChild(listItem);
+      });
+      listItem.appendChild(deleteButton);
+
+      // Agrega el nuevo elemento al DOM
+      var itemList = document.getElementById("itemList");
+      itemList.appendChild(listItem);
+
+      // Agregar el artículo clonado al arreglo de artículos
+      items.push(item);
+    });
+  } else {
+    console.error("La orden seleccionada no es un arreglo válido.");
+  }
 }
