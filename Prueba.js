@@ -556,7 +556,6 @@ document.getElementById('createPdf').addEventListener('click', function () {
 
 let generatedPDF = null;
 
-// Function to generate PDF and download
 function generatePDF() {
   var selectedItems = [];
   var itemList = document.getElementById("itemList").getElementsByTagName("li");
@@ -573,34 +572,46 @@ function generatePDF() {
     // Convertir la lista de artículos seleccionados a JSON
     const selectedItemsJSON = JSON.stringify(selectedItems);
 
+    // Crear el documento PDF
     var doc = new jspdf.jsPDF();
-    doc.setFontSize(20);
-    doc.text("Artículos seleccionados:", 10, 20);
 
-    var yPos = 30;
-    selectedItems.forEach((item, index) => {
-      var text = `${index + 1}. ${item.name} (Cantidad: ${item.amount})`;
-      doc.setFontSize(14);
-      doc.text(text, 10, yPos);
-      yPos += 10;
-    });
+    // Crear una nueva imagen
+    var img = new Image();
+    img.src = './imgs/D_NQ_NP_601050-MLA41611637029_052020-O_auto_x2.png'; // Reemplaza 'ruta_a_tu_logo.png' con la ruta de tu logotipo
 
-    // Generar el Blob del PDF
-    const pdfBlob = doc.output('blob');
+    // Cuando la imagen esté cargada, agrégala al PDF
+    img.onload = function () {
+      doc.setFontSize(20);
+      doc.text("Artículos seleccionados:", 10, 50);
 
-    // Guardar el objeto Blob (PDF) en el arreglo de PDFs
-    pdfs.push(pdfBlob);
+      var yPos = 60;
+      selectedItems.forEach((item, index) => {
+        var text = `${index + 1}. ${item.name} (Cantidad: ${item.amount})`;
+        doc.setFontSize(14);
+        doc.text(text, 10, yPos);
+        yPos += 10;
+      });
 
-    // Guardar la lista de artículos como JSON en el arreglo de órdenes
-    orders.push(selectedItemsJSON);
+      // Agregar el logotipo al PDF
+      doc.addImage(img, 'JPEG', 10, 10, 40, 20); // Ajusta las coordenadas y el tamaño del logotipo
 
-    clearItems();
+      // Generar el Blob del PDF
+      const pdfBlob = doc.output('blob');
 
-    Swal.fire({
-      icon: "success",
-      title: "¡Pedido generado!",
-      text: "El pedido ha sido procesado con éxito.",
-    });
+      // Guardar el objeto Blob (PDF) en el arreglo de PDFs
+      pdfs.push(pdfBlob);
+
+      // Guardar la lista de artículos como JSON en el arreglo de órdenes
+      orders.push(selectedItemsJSON);
+
+      clearItems();
+
+      Swal.fire({
+        icon: "success",
+        title: "¡Pedido generado!",
+        text: "El pedido ha sido procesado con éxito.",
+      });
+    };
   } else {
     Swal.fire("Error", "Seleccione al menos un artículo", "error");
   }
@@ -731,3 +742,11 @@ function repeatOrder(orderIndex) {
     console.error("La orden seleccionada no es un arreglo válido.");
   }
 }
+
+$(document).ready(function () {
+  // Inicializa el select2 en tu select existente
+  $("#itemSelect").select2({
+    placeholder: "Buscar artículo", // Texto de marcador de posición
+    allowClear: true, // Agregar botón de limpiar selección
+  });
+});

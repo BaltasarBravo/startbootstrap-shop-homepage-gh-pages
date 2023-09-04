@@ -5,13 +5,14 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="./Prueba.css">
   <title>Document</title>
 </head>
 
 <body>
   <h2>Lista de Articulos</h2>
-  <select id="itemSelect"></select>
+  <select id="itemSelect" class="custom-select"></select>
   <input type="number" id="quantityInput" placeholder="Cantidad" min="1" value="1">
   <button onclick="addItem()">Agregar articulo</button>
 
@@ -29,10 +30,12 @@
 
   <h2 style="padding: 50px;">Historial de Pedidos</h2>
   <ul id="ordersList"></ul> <!-- Lista de órdenes generadas -->
-
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
   <script src="xlsx.js"></script>
   <script src="./Prueba.js"></script>
 </body>
