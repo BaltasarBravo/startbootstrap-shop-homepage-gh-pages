@@ -217,11 +217,24 @@ body {
 }
 
 #itemSelect {
-  overflow: auto;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+  width: 300px; /* Ancho de 300px */
+  font-family: 'Roboto', Arial, sans-serif;
+  box-sizing: border-box;
 }
 
 #quantityInput {
-  overflow: auto;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+  width: 110px; /* Ancho de 110px */
+  font-family: 'Roboto', Arial, sans-serif;
+  box-sizing: border-box;
+  margin-left: 10px;
 }
 
 #itemList li span {
@@ -270,13 +283,38 @@ body {
 }
 
 .select2-container--default .select2-selection--single {
-  padding: 8px!important;
+  padding: 6px!important;
   font-size: 16px!important;
   border: 1px solid var(--color-primary)!important;
   border-radius: 4px!important;
   margin-right: 1px!important;
-  width: 200px!important;
+  width: 300px!important;
   font-family: 'Roboto', Arial, sans-serif!important;
   box-sizing: border-box!important;
   height: 44px!important;
+}
+
+.select2-container--default .select2-results>.select2-results__options {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+#inputContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  height: 44px;
+}
+
+#addItemButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-family: 'Roboto', Arial, sans-serif;
+  box-sizing: border-box;
 }
