@@ -573,7 +573,7 @@ function generatePDF() {
     const selectedItemsJSON = JSON.stringify(selectedItems);
 
     // Crear el documento PDF
-    var doc = new jspdf.jsPDF();
+    var doc = new jspdf.jsPDF({ orientation: 'portrait' });
 
     // Crear una nueva imagen
     var img = new Image();
@@ -583,7 +583,7 @@ function generatePDF() {
     img.onload = function () {
       doc.setFontSize(20);
       doc.text("Artículos seleccionados:", 10, 50);
-
+    
       var yPos = 60;
       selectedItems.forEach((item, index) => {
         var text = `${index + 1}. ${item.name} (Cantidad: ${item.amount})`;
@@ -591,26 +591,29 @@ function generatePDF() {
         doc.text(text, 10, yPos);
         yPos += 10;
       });
-
+    
       // Agregar el logotipo al PDF
       doc.addImage(img, 'JPEG', 10, 10, 40, 20); // Ajusta las coordenadas y el tamaño del logotipo
-
+    
       // Generar el Blob del PDF
       const pdfBlob = doc.output('blob');
-
+    
       // Guardar el objeto Blob (PDF) en el arreglo de PDFs
       pdfs.push(pdfBlob);
 
       // Guardar la lista de artículos como JSON en el arreglo de órdenes
       orders.push(selectedItemsJSON);
-
+    
       clearItems();
-
+    
       Swal.fire({
         icon: "success",
         title: "¡Pedido generado!",
         text: "El pedido ha sido procesado con éxito.",
       });
+    
+      // Mostrar la lista de órdenes actualizada
+      showOrdersList();
     };
   } else {
     Swal.fire("Error", "Seleccione al menos un artículo", "error");
