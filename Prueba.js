@@ -760,3 +760,68 @@ $(document).ready(function () {
     allowClear: true, // Agregar botón de limpiar selección
   });
 });
+
+
+
+// Configura el botón de escaneo
+document.getElementById('scanBarcodeButton').addEventListener('click', function () {
+  // Configura QuaggaJS para el escaneo de códigos de barras
+  Quagga.init({
+      inputStream: {
+          name: 'Live',
+          type: 'LiveStream',
+          target: document.querySelector('#camera'),
+          constraints: {
+              facingMode: 'environment', // Use la cámara trasera (si está disponible)
+          },
+      },
+      decoder: {
+          readers: ['ean_reader'], // Tipo de códigos de barras que Quagga debe buscar
+      },
+  }, function (err) {
+      if (err) {
+          console.error('Error al iniciar Quagga: ', err);
+          return;
+      }
+
+      // Inicia el escaneo
+      Quagga.start();
+  });
+
+  // Maneja eventos de escaneo
+  Quagga.onDetected(function (result) {
+      const scannedCode = result.codeResult.code;
+
+      // Encuentra el artículo por el código de barras
+      const selectedItem = findItemByCode(scannedCode);
+
+      if (selectedItem) {
+          // Si se encuentra el artículo, agrégalo a la lista de artículos seleccionados
+          addItem(selectedItem);
+      } else {
+          // Si no se encuentra el artículo, muestra un mensaje de error
+          alert('Código de barras no encontrado en la lista de artículos.');
+      }
+
+      // Detén el escaneo después de encontrar un código
+      Quagga.stop();
+  });
+});
+
+// Función para encontrar un artículo por su código de barras
+function findItemByCode(code) {
+  for (const item of items) {
+      if (item.code === code) {
+          return item;
+      }
+  }
+  return null; // Devuelve null si no se encuentra el artículo
+}
+
+// Función para agregar un artículo a la lista de artículos seleccionados
+function addItem(selectedItem) {
+  const itemList = document.getElementById('itemList');
+  const listItem = document.createElement('li');
+  listItem.textContent = `${selectedItem.name} (${selectedItem.code})`;
+  itemList.appendChild(listItem);
+}

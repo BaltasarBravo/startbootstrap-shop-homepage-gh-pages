@@ -13,10 +13,12 @@
 <body>
   <h2>Lista de Articulos</h2>
   <div id="inputContainer">
-  <select id="itemSelect" class="custom-select"></select>
-  <input type="number" id="quantityInput" placeholder="Cantidad" min="1" value="1">
-  <button onclick="addItem()">Agregar articulo</button>
-</div>
+    <select id="itemSelect" class="custom-select"></select>
+    <input type="number" id="quantityInput" placeholder="Cantidad" min="1" value="1">
+    <button onclick="addItem()">Agregar articulo</button>
+  </div>
+
+  <button id="scanBarcodeButton">Escanear Código de Barras</button>
 
   <div id="selectedItems">
     <h3>Articulos seleccionados:</h3>
@@ -28,18 +30,19 @@
     <button id="clearItems">Limpiar Artículos</button>
   </div>
 
-  
+  <div id="camera"></div>
   <!-- <a href="./historial.html">Ver Historial de Pedidos</a> -->
 
   <h2 style="padding: 50px;">Historial de Pedidos</h2>
   <ul id="ordersList"></ul> <!-- Lista de órdenes generadas -->
+
   
-  <script src="https://cdn.jsdelivr.net/npm/quagga"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quagga"></script>
   <script src="xlsx.js"></script>
   <script src="./Prueba.js"></script>
 </body>
