@@ -216,6 +216,7 @@ body {
   font-family: 'Arial', sans-serif;
 }
 
+/* Estilos para el select en pantallas medianas y grandes */
 #itemSelect {
   padding: 10px;
   font-size: 16px;
@@ -226,6 +227,7 @@ body {
   box-sizing: border-box;
 }
 
+/* Estilos para el input en pantallas medianas y grandes */
 #quantityInput {
   padding: 10px;
   font-size: 16px;
@@ -264,7 +266,6 @@ body {
   margin-bottom: 10px;
 }
 
-
 /* Define una clase para la animación de entrada */
 @keyframes fadeIn {
   from {
@@ -301,9 +302,15 @@ body {
 
 #inputContainer {
   display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  height: 44px;
+  align-items: center; /* Centra verticalmente los elementos */
+  justify-content: center; /* Centra horizontalmente los elementos */
+}
+
+#itemSelect,
+#quantityInput,
+#addItemButton {
+  /* Mantén sus estilos anteriores aquí, sin cambiar su tamaño u otras características */
+  margin: 0 10px; /* Añade un margen horizontal entre los elementos */
 }
 
 #addItemButton {
@@ -317,4 +324,47 @@ body {
   transition: background-color 0.3s ease;
   font-family: 'Roboto', Arial, sans-serif;
   box-sizing: border-box;
+}
+
+/* Media query para pantallas pequeñas (menos de 576px) */
+@media (max-width: 575.98px) {
+  /* Establece un estilo flex para el contenedor de los elementos */
+  #inputContainer {
+    display: flex;
+    flex-direction: column; /* Coloca los elementos en una columna en pantallas pequeñas */
+  }
+
+  /* Ajusta el ancho de #itemSelect y #quantityInput para que quepan en la pantalla */
+  #itemSelect,
+  #quantityInput {
+    width: 100%;
+  }
+
+  /* Agrega margen inferior a #itemSelect para separarlo de #quantityInput */
+  #itemSelect {
+    margin-bottom: 10px;
+  }
+
+  /* Ajusta el margen superior de #selectedItems */
+  #selectedItems {
+    margin-top: 30px; /* Aumenta el espacio entre los elementos */
+  }
+
+  /* Nuevos estilos para dispositivos móviles */
+  #itemSelect {
+    width: 60%; /* El select ocupa el 60% del ancho */
+    margin-right: 10px; /* Margen derecho entre el select y el input */
+    border-radius: 4px
+  }
+
+  #quantityInput {
+    width: 30%; /* El input ocupa el 30% del ancho */
+    margin-right: 10px; /* Margen derecho entre el input y el botón */
+  }
+
+  #addItemButton {
+    width: 80%; /* El botón ocupa el 80% del ancho */
+    margin-top: 10px; /* Margen superior para separarlo de los elementos anteriores */
+  }
+
 }

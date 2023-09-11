@@ -428,22 +428,29 @@ function loadItemsFromExcel() {
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
 
-      // Obtención del rango de celdas con los nombres de los artículos (suponiendo que están en la columna D)
+      // Obtención del rango de celdas con los nombres y códigos de los artículos (suponiendo que están en las columnas C y D)
       const range = XLSX.utils.decode_range(worksheet['!ref']);
       const items = [];
 
-      // Recorrido de las celdas y extracción de los nombres de los artículos
+      // Recorrido de las celdas y extracción de los nombres y códigos de los artículos
       for (let R = range.s.r; R <= range.e.r; ++R) {
-        const cellAddress = XLSX.utils.encode_cell({ r: R, c: 3 }); // Columna D
-        const cell = worksheet[cellAddress];
-        if (cell && cell.t === 's') {
-          items.push(cell.v);
+        const cellAddressName = XLSX.utils.encode_cell({ r: R, c: 2 }); // Columna C para el nombre
+        const cellAddressCode = XLSX.utils.encode_cell({ r: R, c: 3 }); // Columna D para el código
+        const cellName = worksheet[cellAddressName];
+        const cellCode = worksheet[cellAddressCode];
+
+        if (cellName && cellName.t === 's' && cellCode && cellCode.t === 's') {
+          const item = {
+            name: cellName.v,
+            code: cellCode.v,
+          };
+          items.push(item);
         }
       }
 
       // Ordenamiento alfabético de los nombres de los artículos
       items.sort(function (a, b) {
-        return a.localeCompare(b);
+        return a.name.localeCompare(b.name);
       });
 
       // Obtención del select element
@@ -454,11 +461,11 @@ function loadItemsFromExcel() {
         selectElement.removeChild(selectElement.firstChild);
       }
 
-      // Creación de las opciones del select con los nombres de los artículos
+      // Creación de las opciones del select con los nombres y códigos de los artículos
       items.forEach(function (item, index) {
         const option = document.createElement('option');
-        option.value = index;
-        option.textContent = item;
+        option.value = index; // Utiliza el índice como valor de la opción
+        option.textContent =item.code + ' - ' + item.name + '' ; // Muestra el nombre y el código entre paréntesis
         selectElement.appendChild(option);
       });
     })
