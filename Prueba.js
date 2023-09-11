@@ -763,107 +763,58 @@ $(document).ready(function () {
 
 
 
-//Prueba de Codigo de Barra
-
-
 // Variable para evitar la detección múltiple del mismo código de barras
-let codeDetected = false;
+    let codeDetected = false;
 
-// Configura el botón de escaneo
-document.getElementById('scanBarcodeButton').addEventListener('click', function () {
-    // Restablece la variable para permitir una nueva detección
-    codeDetected = false;
+    // Configura el botón de escaneo
+    document.getElementById('scanBarcodeButton').addEventListener('click', function () {
+        // Restablece la variable para permitir una nueva detección
+        codeDetected = false;
 
-    // Configura QuaggaJS para el escaneo de códigos de barras
-    Quagga.init({
-        // ...
-    }, function (err) {
-        if (err) {
-            console.error('Error al iniciar Quagga: ', err);
-            return;
-        }
+        // Configura QuaggaJS para el escaneo de códigos de barras
+        Quagga.init({
+            // ...
+        }, function (err) {
+            if (err) {
+                console.error('Error al iniciar Quagga: ', err);
+                return;
+            }
 
-        // Inicia el escaneo
-        Quagga.start();
+            // Inicia el escaneo
+            Quagga.start();
+        });
+
+        // Maneja eventos de escaneo
+        Quagga.onDetected(function (result) {
+            // Si ya se detectó un código, ignora detecciones adicionales
+            if (codeDetected) {
+                return;
+            }
+
+            codeDetected = true; // Marca que se detectó un código
+
+            const scannedCode = result.codeResult.code;
+
+            // Encuentra el artículo por el código de barras
+            const selectedItem = findItemByCode(scannedCode);
+
+            if (selectedItem) {
+                // Si se encuentra el artículo, agrégalo a la lista de artículos seleccionados
+                addItem(selectedItem);
+            } else {
+                // Si no se encuentra el artículo, muestra un mensaje de error
+                alert('Código de barras no encontrado en la lista de artículos.');
+            }
+
+            // Detén el escaneo después de encontrar un código
+            Quagga.stop();
+        });
     });
-
-    // Maneja eventos de escaneo
-    Quagga.onDetected(function (result) {
-        // Si ya se detectó un código, ignora detecciones adicionales
-        if (codeDetected) {
-            return;
-        }
-
-        codeDetected = true; // Marca que se detectó un código
-
-        const scannedCode = result.codeResult.code;
-
-        // Encuentra el artículo por el código de barras
-        const selectedItem = findItemByCode(scannedCode);
-
-        if (selectedItem) {
-            // Si se encuentra el artículo, agrégalo a la lista de artículos seleccionados
-            addItem(selectedItem);
-        } else {
-            // Si no se encuentra el artículo, muestra un mensaje de error
-            alert('Código de barras no encontrado en la lista de artículos.');
-        }
-
-        // Detén el escaneo después de encontrar un código
-        Quagga.stop();
-    });
-});
 
 // Función para agregar un artículo a la lista de artículos seleccionados
 function addItem(selectedItem) {
   const itemList = document.getElementById('itemList');
   const listItem = document.createElement('li');
   listItem.textContent = `${selectedItem.name} (${selectedItem.code})`;
-  itemList.appendChild(listItem);
-}
-
-// Function to handle item selection
-function addItem(selectedItem) {
-  const itemList = document.getElementById('itemList');
-  let selectedAmount = 1;
-
-  const listItem = document.createElement('li');
-
-  const nameSpan = document.createElement('span');
-  nameSpan.textContent = selectedItem.name;
-  listItem.appendChild(nameSpan);
-
-  const amountSpan = document.createElement('span');
-  amountSpan.textContent = 'Cantidad: ' + selectedAmount;
-  listItem.appendChild(amountSpan);
-
-  const addButton = createButton('+', function () {
-    selectedAmount++;
-    amountSpan.textContent = 'Cantidad: ' + selectedAmount;
-  });
-  listItem.appendChild(addButton);
-
-  const subtractButton = createButton('-', function () {
-    if (selectedAmount > 1) {
-      selectedAmount--;
-      amountSpan.textContent = 'Cantidad: ' + selectedAmount;
-    }
-  });
-  listItem.appendChild(subtractButton);
-
-  const editButton = createButton('Editar', function () {
-    const newAmount = prompt('Ingrese una nueva cantidad:');
-    if (newAmount !== null && !isNaN(newAmount) && parseInt(newAmount) >= 1) {
-      selectedAmount = parseInt(newAmount);
-      amountSpan.textContent = 'Cantidad: ' + selectedAmount;
-    }
-  });
-  listItem.appendChild(editButton);
-
-  const deleteButton = createButton('Eliminar', function () {
-    itemList.removeChild(listItem);
-  });
-  listItem.appendChild(deleteButton);
-
   itemList.appendChild(listItem);
 }
