@@ -765,16 +765,6 @@ $(document).ready(function () {
 
 
 
-// Función para encontrar un artículo por su código de barras
-function findItemByCode(code) {
-  for (const item of items) {
-    if (item.code === code) {
-      return item;
-    }
-  }
-  return null; // Devuelve null si no se encuentra el artículo
-}
-
 // Variable para evitar la detección múltiple del mismo código de barras
 let codeDetected = false;
 
@@ -817,11 +807,14 @@ document.getElementById('scanBarcodeButton').addEventListener('click', function 
 
     const scannedCode = result.codeResult.code;
 
-    // Encuentra el artículo por el código de barras
-    const selectedItem = findItemByCode(scannedCode);
+    // Busca el número del código de barras en los códigos de los artículos
+    const selectedItemIndex = findItemIndexByBarcode(scannedCode);
 
-    if (selectedItem) {
-      // Si se encuentra el artículo, crea un elemento en el DOM para mostrarlo
+    if (selectedItemIndex !== -1) {
+      // Encuentra el artículo correspondiente en la lista
+      const selectedItem = items[selectedItemIndex];
+
+      // Agrega el artículo al DOM y a la lista de artículos seleccionados
       const listItem = createListItem(selectedItem);
 
       // Agrega el elemento al DOM
@@ -839,11 +832,16 @@ document.getElementById('scanBarcodeButton').addEventListener('click', function 
     Quagga.stop();
   });
 
-  // Función para crear un elemento en el DOM para mostrar un artículo
-  function createListItem(selectedItem) {
-    const listItem = document.createElement('li');
-    listItem.textContent = `${selectedItem.name} (${selectedItem.code})`;
-    return listItem;
+  // Función para encontrar el índice del artículo por su código de barras
+  function findItemIndexByBarcode(barcode) {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      // Supongamos que cada artículo tiene un atributo 'barcode' que almacena su código de barras
+      if (item.barcode === barcode) {
+        return i; // Devuelve el índice del artículo si coincide el código de barras
+      }
+    }
+    return -1; // Devuelve -1 si no se encuentra el código de barras
   }
 });
 
