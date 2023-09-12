@@ -767,45 +767,54 @@ $(document).ready(function () {
 // Variable para evitar la detección múltiple del mismo código de barras
 let codeDetected = false;
 
-// Configura QuaggaJS para el escaneo de códigos de barras
-Quagga.init({
-    inputStream: {
-        name: 'Live',
-        type: 'LiveStream',
-        target: document.querySelector('#camera'),
-        constraints: {
-            facingMode: 'environment', // Use la cámara trasera (si está disponible)
+// Configura el botón de escaneo
+document.getElementById('scanBarcodeButton').addEventListener('click', function () {
+    // Restablece la variable para permitir una nueva detección
+    codeDetected = false;
+
+    // Configura QuaggaJS para el escaneo de códigos de barras
+    Quagga.init({
+        inputStream: {
+            name: 'Live',
+            type: 'LiveStream',
+            target: document.querySelector('#camera'),
+            constraints: {
+                facingMode: 'environment', // Use la cámara trasera (si está disponible)
+            },
         },
-    },
-    decoder: {
-        readers: ['ean_reader'], // Tipo de códigos de barras que Quagga debe buscar
-    },
-}, function (err) {
-    if (err) {
-        console.error('Error al iniciar Quagga: ', err);
-        return;
-    }
+        decoder: {
+            readers: ['ean_reader'], // Tipo de códigos de barras que Quagga debe buscar
+        },
+    }, function (err) {
+        if (err) {
+            console.error('Error al iniciar Quagga: ', err);
+            return;
+        }
 
-    // Inicia el escaneo
-    Quagga.start();
-});
+        // Inicia el escaneo
+        Quagga.start();
+    });
 
-// Maneja eventos de escaneo
-Quagga.onDetected(function (result) {
-    // Si ya se detectó un código, ignora detecciones adicionales
-    if (codeDetected) {
-        return;
-    }
+    // Maneja eventos de escaneo
+    Quagga.onDetected(function (result) {
+        // Si ya se detectó un código, ignora detecciones adicionales
+        if (codeDetected) {
+            return;
+        }
 
-    codeDetected = true; // Marca que se detectó un código
+        codeDetected = true; // Marca que se detectó un código
 
-    const scannedCode = result.codeResult.code;
+        const scannedCode = result.codeResult.code;
 
-    // Coloca el número en el campo de búsqueda del select2
-    $("#itemSelect").val(scannedCode);
+        // Coloca el número en el campo de búsqueda del select2
+        $("#itemSelect").val(scannedCode);
 
-    // Desencadena un evento de búsqueda para que se actualice automáticamente
-    $("#itemSelect").trigger("change");
+        // Desencadena un evento de búsqueda para que se actualice automáticamente
+        $("#itemSelect").trigger("change");
+
+        // Detén el escaneo después de encontrar un código
+        Quagga.stop();
+    });
 });
 
 // Configura el evento de búsqueda en el select2
@@ -835,18 +844,6 @@ $("#itemSelect").on("select2:select", function (e) {
 $("#itemSelect").on("select2:open", function () {
     $(".select2-search__field").attr("placeholder", "Escanee o busque aquí");
 });
-
-// Función para encontrar el índice del artículo por su código
-function findItemIndexByCode(code) {
-    for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        // Compara el código escaneado con el código del artículo
-        if (item.code === code) {
-            return i; // Devuelve el índice del artículo si coincide el código
-        }
-    }
-    return -1; // Devuelve -1 si no se encuentra el código
-}
 
 // Función para crear elementos de la lista
 function createListItem(selectedItem) {
@@ -897,7 +894,6 @@ function createButton(text, onClick) {
     button.addEventListener('click', onClick);
     return button;
 }
-
 
 // Resto de tu código para la lógica de los botones y otras funcionalidades
 
