@@ -823,6 +823,12 @@ document.getElementById('scanBarcodeButton').addEventListener('click', function 
 
       // Agrega el artículo a la lista de artículos seleccionados
       addItem(selectedItem);
+
+      // Coloca el número en el campo de búsqueda del select2
+      $("#itemSelect").val(scannedCode);
+
+      // Desencadena un evento de búsqueda para que se actualice automáticamente
+      $("#itemSelect").trigger("change");
     } else {
       // Si no se encuentra el artículo, muestra un mensaje de error
       alert('Código de barras no encontrado en la lista de artículos.');
@@ -844,6 +850,18 @@ document.getElementById('scanBarcodeButton').addEventListener('click', function 
     return -1; // Devuelve -1 si no se encuentra el código de barras
   }
 });
+
+// Configura el evento de búsqueda en el select2
+$("#itemSelect").select2({
+  placeholder: "Buscar artículo",
+  allowClear: true,
+});
+
+// Maneja el evento de búsqueda para filtrar los resultados
+$("#itemSelect").on("select2:open", function () {
+  $(".select2-search__field").attr("placeholder", "Escanee o busque aquí");
+});
+
 
 
 
