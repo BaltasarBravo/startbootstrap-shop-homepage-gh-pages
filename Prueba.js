@@ -767,56 +767,68 @@ let codeDetected = false;
 
 // Configura el botón de escaneo
 document.getElementById('scanBarcodeButton').addEventListener('click', function () {
-    // Restablece la variable para permitir una nueva detección
-    codeDetected = false;
+  // Restablece la variable para permitir una nueva detección
+  codeDetected = false;
 
-    // Configura QuaggaJS para el escaneo de códigos de barras
-    Quagga.init({
-            inputStream: {
-                name: 'Live',
-                type: 'LiveStream',
-                target: document.querySelector('#camera'),
-                constraints: {
-                    facingMode: 'environment', // Use la cámara trasera (si está disponible)
-                },
-            },
-            decoder: {
-                readers: ['ean_reader'], // Tipo de códigos de barras que Quagga debe buscar
-            },
-        }, function (err) {
-            if (err) {
-                console.error('Error al iniciar Quagga: ', err);
-                return;
-            }
-      
-            // Inicia el escaneo
-            Quagga.start();
-        });
+  // Configura QuaggaJS para el escaneo de códigos de barras
+  Quagga.init({
+    inputStream: {
+      name: 'Live',
+      type: 'LiveStream',
+      target: document.querySelector('#camera'),
+      constraints: {
+        facingMode: 'environment', // Use la cámara trasera (si está disponible)
+      },
+    },
+    decoder: {
+      readers: ['ean_reader'], // Tipo de códigos de barras que Quagga debe buscar
+    },
+  }, function (err) {
+    if (err) {
+      console.error('Error al iniciar Quagga: ', err);
+      return;
+    }
 
-    // Maneja eventos de escaneo
-    Quagga.onDetected(function (result) {
-        // Si ya se detectó un código, ignora detecciones adicionales
-        if (codeDetected) {
-            return;
-        }
+    // Inicia el escaneo
+    Quagga.start();
+  });
 
-        codeDetected = true; // Marca que se detectó un código
+  // Maneja eventos de escaneo
+  Quagga.onDetected(function (result) {
+    // Si ya se detectó un código, ignora detecciones adicionales
+    if (codeDetected) {
+      return;
+    }
 
-        const scannedCode = result.codeResult.code;
+    codeDetected = true; // Marca que se detectó un código
 
-        // Actualiza automáticamente el valor del campo de selección
-        const selectElement = document.getElementById('itemSelect');
-        selectElement.value = scannedCode;
+    const scannedCode = result.codeResult.code;
 
-        // Desencadena el evento de selección para que Select2 actualice la visualización
-        const event = new Event('change', { bubbles: true });
-        selectElement.dispatchEvent(event);
+    // Encuentra el artículo por el código de barras
+    const selectedItem = findItemByCode(scannedCode);
 
-        // Detén el escaneo después de encontrar un código
-        Quagga.stop();
-    });
+    if (selectedItem) {
+      // Si se encuentra el artículo, agrégalo a la lista de artículos seleccionados
+      addItem(selectedItem);
+    } else {
+      // Si no se encuentra el artículo, muestra un mensaje de error
+      alert('Código de barras no encontrado en la lista de artículos.');
+    }
+
+    // Detén el escaneo después de encontrar un código
+    Quagga.stop();
+  });
 });
 
+// Función para encontrar un artículo por su código de barras
+function findItemByCode(code) {
+  for (const item of items) {
+    if (item.code === code) {
+      return item;
+    }
+  }
+  return null; // Devuelve null si no se encuentra el artículo
+}
 
 
 
