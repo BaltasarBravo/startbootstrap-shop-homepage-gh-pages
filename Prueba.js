@@ -829,11 +829,14 @@ $("#itemSelect").on("select2:select", function (e) {
   
   // Verifica si el artículo existe en la lista
   if (selectedItem) {
-    const itemList = document.getElementById('itemList');
-    const listItem = createListItem(selectedItem);
+    // Verifica si se escaneó un código de barras antes de agregarlo
+    if (codeDetected) {
+      const itemList = document.getElementById('itemList');
+      const listItem = createListItem(selectedItem);
 
-    // Agrega el elemento al DOM
-    itemList.appendChild(listItem);
+      // Agrega el elemento al DOM
+      itemList.appendChild(listItem);
+    }
   }
 });
 
@@ -893,6 +896,7 @@ function createButton(text, onClick) {
 }
 
 // Resto de tu código para la lógica de los botones y otras funcionalidades
+
 
 
 
