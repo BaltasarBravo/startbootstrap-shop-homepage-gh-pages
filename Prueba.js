@@ -772,25 +772,26 @@ document.getElementById('scanBarcodeButton').addEventListener('click', function 
 
     // Configura QuaggaJS para el escaneo de códigos de barras
     Quagga.init({
-        inputStream: {
-            type: 'LiveStream',
-            constraints: {
-                width: 640,
-                height: 480,
+            inputStream: {
+                name: 'Live',
+                type: 'LiveStream',
+                target: document.querySelector('#camera'),
+                constraints: {
+                    facingMode: 'environment', // Use la cámara trasera (si está disponible)
+                },
             },
-        },
-        decoder: {
-            readers: ['ean_reader'], // Puedes configurar otros tipos de lectores de códigos de barras aquí
-        },
-    }, function (err) {
-        if (err) {
-            console.error('Error al iniciar Quagga: ', err);
-            return;
-        }
-
-        // Inicia el escaneo
-        Quagga.start();
-    });
+            decoder: {
+                readers: ['ean_reader'], // Tipo de códigos de barras que Quagga debe buscar
+            },
+        }, function (err) {
+            if (err) {
+                console.error('Error al iniciar Quagga: ', err);
+                return;
+            }
+      
+            // Inicia el escaneo
+            Quagga.start();
+        });
 
     // Maneja eventos de escaneo
     Quagga.onDetected(function (result) {
