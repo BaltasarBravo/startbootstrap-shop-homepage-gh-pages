@@ -762,6 +762,19 @@ $(document).ready(function () {
 });
 
 
+
+
+
+// Función para encontrar un artículo por su código de barras
+function findItemByCode(code) {
+  for (const item of items) {
+    if (item.code === code) {
+      return item;
+    }
+  }
+  return null; // Devuelve null si no se encuentra el artículo
+}
+
 // Variable para evitar la detección múltiple del mismo código de barras
 let codeDetected = false;
 
@@ -808,7 +821,14 @@ document.getElementById('scanBarcodeButton').addEventListener('click', function 
     const selectedItem = findItemByCode(scannedCode);
 
     if (selectedItem) {
-      // Si se encuentra el artículo, agrégalo a la lista de artículos seleccionados
+      // Si se encuentra el artículo, crea un elemento en el DOM para mostrarlo
+      const listItem = createListItem(selectedItem);
+
+      // Agrega el elemento al DOM
+      const itemList = document.getElementById('itemList');
+      itemList.appendChild(listItem);
+
+      // Agrega el artículo a la lista de artículos seleccionados
       addItem(selectedItem);
     } else {
       // Si no se encuentra el artículo, muestra un mensaje de error
@@ -818,17 +838,14 @@ document.getElementById('scanBarcodeButton').addEventListener('click', function 
     // Detén el escaneo después de encontrar un código
     Quagga.stop();
   });
-});
 
-// Función para encontrar un artículo por su código de barras
-function findItemByCode(code) {
-  for (const item of items) {
-    if (item.code === code) {
-      return item;
-    }
+  // Función para crear un elemento en el DOM para mostrar un artículo
+  function createListItem(selectedItem) {
+    const listItem = document.createElement('li');
+    listItem.textContent = `${selectedItem.name} (${selectedItem.code})`;
+    return listItem;
   }
-  return null; // Devuelve null si no se encuentra el artículo
-}
+});
 
 
 
