@@ -812,6 +812,9 @@ document.getElementById('scanBarcodeButton').addEventListener('click', function 
         // Desencadena un evento de búsqueda para que se actualice automáticamente
         $("#itemSelect").trigger("change");
 
+        // Muestra el código escaneado a modo de prueba
+        document.getElementById('scannedCodeDisplay').textContent = "Código Escaneado: " + scannedCode;
+
         // Detén el escaneo después de encontrar un código
         Quagga.stop();
     });
