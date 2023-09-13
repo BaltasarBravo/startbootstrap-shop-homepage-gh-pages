@@ -895,6 +895,7 @@ function createButton(text, onClick) {
     return button;
 }
 
+
 // Resto de tu código para la lógica de los botones y otras funcionalidades
 
 
