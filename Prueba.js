@@ -787,8 +787,8 @@ document.getElementById('scanBarcodeButton').addEventListener('click', function 
             },
         },
         decoder: {
-            readers: ['ean_reader'], // Tipo de códigos de barras que Quagga debe buscar
-        },
+          readers: ['ean_reader', 'code_128_reader'], // Tipos de códigos de barras que Quagga debe buscar
+      },
     }, function (err) {
         if (err) {
             console.error('Error al iniciar Quagga: ', err);
