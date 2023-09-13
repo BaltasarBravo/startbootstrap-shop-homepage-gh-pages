@@ -767,10 +767,14 @@ $(document).ready(function () {
 // Variable para evitar la detección múltiple del mismo código de barras
 let codeDetected = false;
 
+// Variable para habilitar o deshabilitar la adición automática al DOM
+let autoAddToDOM = true;
+
 // Configura el botón de escaneo
 document.getElementById('scanBarcodeButton').addEventListener('click', function () {
     // Restablece la variable para permitir una nueva detección
     codeDetected = false;
+    autoAddToDOM = true; // Habilita la adición automática al DOM al escanear
 
     // Configura QuaggaJS para el escaneo de códigos de barras
     Quagga.init({
@@ -831,15 +835,12 @@ $("#itemSelect").on("select2:select", function (e) {
     const selectedItem = e.params.data;
 
     // Verifica si el artículo existe en la lista
-    if (selectedItem) {
-        // Verifica si se escaneó un código de barras antes de agregarlo
-        if (codeDetected) {
-            const itemList = document.getElementById('itemList');
-            const listItem = createListItem(selectedItem);
+    if (selectedItem && autoAddToDOM) {
+        const itemList = document.getElementById('itemList');
+        const listItem = createListItem(selectedItem);
 
-            // Agrega el elemento al DOM
-            itemList.appendChild(listItem);
-        }
+        // Agrega el elemento al DOM
+        itemList.appendChild(listItem);
     }
 });
 
