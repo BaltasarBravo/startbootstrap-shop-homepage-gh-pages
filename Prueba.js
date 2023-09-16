@@ -465,7 +465,7 @@ function loadItemsFromExcel() {
       items.forEach(function (item, index) {
         const option = document.createElement('option');
         option.value = index; // Utiliza el índice como valor de la opción
-        option.textContent =item.code + ' - ' + item.name + '' ; // Muestra el nombre y el código entre paréntesis
+        option.textContent = item.code + ' - ' + item.name + ''; // Muestra el nombre y el código entre paréntesis
         selectElement.appendChild(option);
       });
     })
@@ -590,7 +590,7 @@ function generatePDF() {
     img.onload = function () {
       doc.setFontSize(20);
       doc.text("Artículos seleccionados:", 10, 50);
-    
+
       var yPos = 60;
       selectedItems.forEach((item, index) => {
         var text = `${index + 1}. ${item.name} (Cantidad: ${item.amount})`;
@@ -598,27 +598,27 @@ function generatePDF() {
         doc.text(text, 10, yPos);
         yPos += 10;
       });
-    
+
       // Agregar el logotipo al PDF
       doc.addImage(img, 'JPEG', 10, 10, 40, 20); // Ajusta las coordenadas y el tamaño del logotipo
-    
+
       // Generar el Blob del PDF
       const pdfBlob = doc.output('blob');
-    
+
       // Guardar el objeto Blob (PDF) en el arreglo de PDFs
       pdfs.push(pdfBlob);
 
       // Guardar la lista de artículos como JSON en el arreglo de órdenes
       orders.push(selectedItemsJSON);
-    
+
       clearItems();
-    
+
       Swal.fire({
         icon: "success",
         title: "¡Pedido generado!",
         text: "El pedido ha sido procesado con éxito.",
       });
-    
+
       // Mostrar la lista de órdenes actualizada
       showOrdersList();
     };
@@ -767,136 +767,139 @@ $(document).ready(function () {
 // Variable para evitar la detección múltiple del mismo código de barras
 let codeDetected = false;
 
-// Variable para habilitar o deshabilitar la adición automática al DOM
-let autoAddToDOM = true;
+// Variable para habilitar o deshabilitar la adición automática al DOM durante el escaneo
+let autoAddToDOM = false;
 
 // Configura el botón de escaneo
 document.getElementById('scanBarcodeButton').addEventListener('click', function () {
-    // Restablece la variable para permitir una nueva detección
-    codeDetected = false;
-    autoAddToDOM = true; // Habilita la adición automática al DOM al escanear
+  // Restablece la variable para permitir una nueva detección
+  codeDetected = false;
+  autoAddToDOM = true; // Habilita la adición automática al DOM al escanear
 
-    // Configura QuaggaJS para el escaneo de códigos de barras
-    Quagga.init({
-        inputStream: {
-            name: 'Live',
-            type: 'LiveStream',
-            target: document.querySelector('#camera'),
-            constraints: {
-                facingMode: 'environment', // Use la cámara trasera (si está disponible)
-            },
-        },
-        decoder: {
-          readers: ['ean_reader', 'code_128_reader'], // Tipos de códigos de barras que Quagga debe buscar
+  // Configura QuaggaJS para el escaneo de códigos de barras
+  Quagga.init({
+    inputStream: {
+      name: 'Live',
+      type: 'LiveStream',
+      target: document.querySelector('#camera'),
+      constraints: {
+        facingMode: 'environment', // Use la cámara trasera (si está disponible)
       },
-    }, function (err) {
-        if (err) {
-            console.error('Error al iniciar Quagga: ', err);
-            return;
-        }
+    },
+    decoder: {
+      readers: ['ean_reader', 'code_128_reader'], // Tipos de códigos de barras que Quagga debe buscar
+    },
+  }, function (err) {
+    if (err) {
+      console.error('Error al iniciar Quagga: ', err);
+      return;
+    }
 
-        // Inicia el escaneo
-        Quagga.start();
-    });
+    // Inicia el escaneo
+    Quagga.start();
+  });
 
-    // Maneja eventos de escaneo
-    Quagga.onDetected(function (result) {
-        // Si ya se detectó un código, ignora detecciones adicionales
-        if (codeDetected) {
-            return;
-        }
+  // Maneja eventos de escaneo
+  Quagga.onDetected(function (result) {
+    // Si ya se detectó un código, ignora detecciones adicionales
+    if (codeDetected) {
+      return;
+    }
 
-        codeDetected = true; // Marca que se detectó un código
+    codeDetected = true; // Marca que se detectó un código
 
-        const scannedCode = result.codeResult.code;
+    const scannedCode = result.codeResult.code;
 
-        // Coloca el número en el campo de búsqueda del select2
-        $("#itemSelect").val(scannedCode);
+    // Coloca el número en el campo de búsqueda del select2
+    $(".select2-search__field").val(scannedCode);
 
-        // Desencadena un evento de búsqueda para que se actualice automáticamente
-        $("#itemSelect").trigger("change");
+    // Desencadena un evento de búsqueda para que se actualice automáticamente
+    $(".select2-search__field").trigger("input");
 
-        // Muestra el código escaneado a modo de prueba
-        document.getElementById('scannedCodeDisplay').textContent = "Código Escaneado: " + scannedCode;
+    // Muestra el código escaneado a modo de prueba
+    document.getElementById('scannedCodeDisplay').textContent = "Código Escaneado: " + scannedCode;
 
-        // Detén el escaneo después de encontrar un código
-        Quagga.stop();
-    });
+    // Detén el escaneo después de encontrar un código
+    Quagga.stop();
+
+    // Deshabilita la adición automática al DOM después de escanear
+    autoAddToDOM = false;
+  });
 });
 
 // Configura el evento de búsqueda en el select2
 $("#itemSelect").select2({
-    placeholder: "Buscar artículo",
-    allowClear: true,
+  placeholder: "Buscar artículo",
+  allowClear: true,
 });
 
 // Maneja el evento de búsqueda para filtrar los resultados y agregar al DOM si existe
 $("#itemSelect").on("select2:select", function (e) {
-    const selectedItem = e.params.data;
+  const selectedItem = e.params.data;
 
-    // Verifica si el artículo existe en la lista
-    if (selectedItem && autoAddToDOM) {
-        const itemList = document.getElementById('itemList');
-        const listItem = createListItem(selectedItem);
+  // Verifica si el artículo existe en la lista
+  if (selectedItem && autoAddToDOM) {
+    const itemList = document.getElementById('itemList');
+    const listItem = createListItem(selectedItem);
 
-        // Agrega el elemento al DOM
-        itemList.appendChild(listItem);
-    }
+    // Agrega el elemento al DOM
+    itemList.appendChild(listItem);
+  }
 });
 
 // Maneja el evento de búsqueda para filtrar los resultados
 $("#itemSelect").on("select2:open", function () {
-    $(".select2-search__field").attr("placeholder", "Escanee o busque aquí");
+  $(".select2-search__field").attr("placeholder", "Escanee o busque aquí");
 });
 
 // Función para crear elementos de la lista
 function createListItem(selectedItem) {
-    const listItem = document.createElement('li');
-    listItem.textContent = selectedItem.text;
+  const listItem = document.createElement('li');
+  listItem.textContent = selectedItem.text;
 
-    // Agrega botones
-    const amountSpan = document.createElement('span');
-    amountSpan.textContent = 'Cantidad: 1';
-    listItem.appendChild(amountSpan);
+  // Agrega botones
+  const amountSpan = document.createElement('span');
+  amountSpan.textContent = 'Cantidad: 1';
+  listItem.appendChild(amountSpan);
 
-    const addButton = createButton('+', function () {
-        // Incrementa la cantidad
-        const currentAmount = parseInt(amountSpan.textContent.split(' ')[1]);
-        amountSpan.textContent = 'Cantidad: ' + (currentAmount + 1);
-    });
-    listItem.appendChild(addButton);
+  const addButton = createButton('+', function () {
+    // Incrementa la cantidad
+    const currentAmount = parseInt(amountSpan.textContent.split(' ')[1]);
+    amountSpan.textContent = 'Cantidad: ' + (currentAmount + 1);
+  });
+  listItem.appendChild(addButton);
 
-    const subtractButton = createButton('-', function () {
-        // Decrementa la cantidad, pero no menos de 1
-        const currentAmount = parseInt(amountSpan.textContent.split(' ')[1]);
-        if (currentAmount > 1) {
-            amountSpan.textContent = 'Cantidad: ' + (currentAmount - 1);
-        }
-    });
-    listItem.appendChild(subtractButton);
+  const subtractButton = createButton('-', function () {
+    // Decrementa la cantidad, pero no menos de 1
+    const currentAmount = parseInt(amountSpan.textContent.split(' ')[1]);
+    if (currentAmount > 1) {
+      amountSpan.textContent = 'Cantidad: ' + (currentAmount - 1);
+    }
+  });
+  listItem.appendChild(subtractButton);
 
-    const editButton = createButton('Editar', function () {
-        const newAmount = prompt('Ingrese una nueva cantidad:');
-        if (newAmount !== null && !isNaN(newAmount) && parseInt(newAmount) >= 1) {
-            amountSpan.textContent = 'Cantidad: ' + newAmount;
-        }
-    });
-    listItem.appendChild(editButton);
+  const editButton = createButton('Editar', function () {
+    const newAmount = prompt('Ingrese una nueva cantidad:');
+    if (newAmount !== null && !isNaN(newAmount) && parseInt(newAmount) >= 1) {
+      amountSpan.textContent = 'Cantidad: ' + newAmount;
+    }
+  });
+  listItem.appendChild(editButton);
 
-    const deleteButton = createButton('Eliminar', function () {
-        itemList.removeChild(listItem);
-    });
-    listItem.appendChild(deleteButton);
+  const deleteButton = createButton('Eliminar', function () {
+    itemList.removeChild(listItem);
+  });
+  listItem.appendChild(deleteButton);
 
-    return listItem;
+  return listItem;
 }
 
 // Función para crear botones
 function createButton(text, onClick) {
-    const button = document.createElement('button');
-    button.textContent = text;
-    button.addEventListener('click', onClick);
-    return button;
+  const button = document.createElement('button');
+  button.textContent = text;
+  button.addEventListener('click', onClick);
+  return button;
 }
 
 // Resto de tu código para la lógica de los botones y otras funcionalidades
