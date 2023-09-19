@@ -8,17 +8,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="./Prueba.css">
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('/service-worker.js').then(function (registration) {
-          console.log('Service Worker registrado con éxito:', registration);
-        }).catch(function (error) {
-          console.error('Error al registrar el Service Worker:', error);
-        });
-      });
-    }
-  </script>
+  
   
   <title>Document</title>
 </head>
@@ -57,7 +47,17 @@
   </div>
   
 
-  
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/service-worker.js').then(function (registration) {
+          console.log('Service Worker registrado con éxito:', registration);
+        }).catch(function (error) {
+          console.error('Error al registrar el Service Worker:', error);
+        });
+      });
+    }
+  </script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
