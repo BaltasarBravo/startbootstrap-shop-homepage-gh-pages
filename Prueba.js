@@ -909,33 +909,101 @@ function createButton(text, onClick) {
 
 
 
-window.addEventListener('load', () => {
-  let deferredPrompt;
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    showInstallButton();
+// Verifica si la API de instalación está disponible en el navegador
+if ('serviceWorker' in navigator && 'PushManager' in window) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/service-worker.js').then(function () {
+      // Registro exitoso del Service Worker
+    }).catch(function () {
+      // Error en el registro del Service Worker
+    });
   });
+}
 
+if (window.matchMedia('(display-mode: standalone)').matches) {
+  // La aplicación ya está instalada
+} else {
+  // Muestra el banner de instalación
+  const installBanner = document.getElementById('installBanner');
+  installBanner.style.display = 'block';
+
+  // Maneja el evento del botón de instalación
   const installButton = document.getElementById('installButton');
+  installButton.addEventListener('click', function () {
+    // Intenta instalar la aplicación
+    deferredPrompt.prompt();
+  });
+}
 
+// Variable para almacenar el evento de instalación diferida
+let deferredPrompt;
+
+// Evento que se dispara cuando se puede instalar la PWA
+window.addEventListener('beforeinstallprompt', (event) => {
+  // Almacena el evento de instalación diferida
+  deferredPrompt = event;
+
+  // Muestra el botón de instalación si lo deseas
+  showInstallButton();
+});
+
+// Función para mostrar el botón de instalación
+function showInstallButton() {
+  // Muestra el botón de instalación
+  const installButton = document.getElementById('installButton');
+  installButton.style.display = 'block';
+
+  // Agrega un evento click al botón para iniciar la instalación
   installButton.addEventListener('click', () => {
+    // Verifica que deferredPrompt esté definido
     if (deferredPrompt) {
+      // Muestra el cuadro de diálogo de instalación
       deferredPrompt.prompt();
 
+      // Espera a que el usuario responda
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
-          console.log('El usuario aceptó la instalación');
+          console.log('El usuario aceptó la instalación.');
         } else {
-          console.log('El usuario rechazó la instalación');
+          console.log('El usuario canceló la instalación.');
         }
 
+        // Limpia deferredPrompt después de la instalación
         deferredPrompt = null;
       });
     }
   });
-});
+}
+
+
+
+// window.addEventListener('load', () => {
+//   let deferredPrompt;
+
+//   window.addEventListener('beforeinstallprompt', (e) => {
+//     e.preventDefault();
+//     deferredPrompt = e;
+//     showInstallButton();
+//   });
+
+//   const installButton = document.getElementById('installButton');
+
+//   installButton.addEventListener('click', () => {
+//     if (deferredPrompt) {
+//       deferredPrompt.prompt();
+
+//       deferredPrompt.userChoice.then((choiceResult) => {
+//         if (choiceResult.outcome === 'accepted') {
+//           console.log('El usuario aceptó la instalación');
+//         } else {
+//           console.log('El usuario rechazó la instalación');
+//         }
+
+//         deferredPrompt = null;
+//       });
+//     }
+//   });
+// });
 
 
 
