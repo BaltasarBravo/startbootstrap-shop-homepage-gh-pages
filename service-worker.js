@@ -57,3 +57,12 @@ self.addEventListener('fetch', function(event) {
     })
   );
 });
+
+// Evento 'beforeinstallprompt' para manejar la instalación de la aplicación
+self.addEventListener('beforeinstallprompt', (event) => {
+  // Guarda el evento para usarlo cuando el usuario decida instalar
+  deferredPrompt = event;
+
+  // Muestra el banner de instalación o realiza otras acciones
+  // para notificar al usuario que la aplicación se puede instalar
+});

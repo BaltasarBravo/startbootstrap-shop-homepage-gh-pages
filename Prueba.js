@@ -909,6 +909,10 @@ function createButton(text, onClick) {
 
 
 
+
+// Declarar la variable deferredPrompt
+let deferredPrompt;
+
 // Verifica si la API de instalación está disponible en el navegador
 if ('serviceWorker' in navigator && 'PushManager' in window) {
   window.addEventListener('load', function () {
@@ -920,6 +924,7 @@ if ('serviceWorker' in navigator && 'PushManager' in window) {
   });
 }
 
+// Verifica si el usuario ha instalado previamente la aplicación
 if (window.matchMedia('(display-mode: standalone)').matches) {
   // La aplicación ya está instalada
 } else {
@@ -931,12 +936,11 @@ if (window.matchMedia('(display-mode: standalone)').matches) {
   const installButton = document.getElementById('installButton');
   installButton.addEventListener('click', function () {
     // Intenta instalar la aplicación
-    deferredPrompt.prompt();
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+    }
   });
 }
-
-// Variable para almacenar el evento de instalación diferida
-let deferredPrompt;
 
 // Evento que se dispara cuando se puede instalar la PWA
 window.addEventListener('beforeinstallprompt', (event) => {
