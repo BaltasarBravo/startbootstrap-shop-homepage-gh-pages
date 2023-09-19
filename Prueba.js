@@ -909,6 +909,37 @@ function createButton(text, onClick) {
 
 
 
+window.addEventListener('load', () => {
+  let deferredPrompt;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallButton();
+  });
+
+  const installButton = document.getElementById('installButton');
+
+  installButton.addEventListener('click', () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('El usuario aceptó la instalación');
+        } else {
+          console.log('El usuario rechazó la instalación');
+        }
+
+        deferredPrompt = null;
+      });
+    }
+  });
+});
+
+
+
+
 
 
 
