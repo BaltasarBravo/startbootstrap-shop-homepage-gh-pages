@@ -3,10 +3,10 @@ const cacheName = 'mi-aplicacion-cache-v1';
 
 // Lista de archivos que se deben almacenar en caché
 const cacheFiles = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon.png',
+  './',
+  './index.html',
+  './manifest.json',
+  './imgs/D_NQ_NP_601050-MLA41611637029_052020-O_auto_x2.png',
   // Agrega aquí otros archivos que desees almacenar en caché
 ];
 
