@@ -66,3 +66,4 @@ self.addEventListener('beforeinstallprompt', (event) => {
   // Muestra el banner de instalación o realiza otras acciones
   // para notificar al usuario que la aplicación se puede instalar
 });
+
