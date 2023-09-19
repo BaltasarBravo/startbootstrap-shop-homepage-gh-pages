@@ -1,7 +1,7 @@
 {
-    "name": "Tienda El Nuevo Emporio",
+    "name": "Pedidos a Proveedores - ENESA",
     "short_name": "EmporioApp",
-    "description": "Ecommerce",
+    "description": "ENESA Proveedores",
     "start_url": "./index.html",
     "display": "standalone",
     "background_color": "#ffffff",
