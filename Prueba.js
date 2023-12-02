@@ -908,8 +908,6 @@ function createButton(text, onClick) {
 
 
 
-
-
 // Declarar la variable deferredPrompt
 let deferredPrompt;
 
