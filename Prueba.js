@@ -407,6 +407,8 @@ let items = [];
 // Arreglo para almacenar los objetos Blob (PDFs) de las órdenes generadas
 const pdfs = [];
 
+const excels = [];
+
 // Arreglo para almacenar los objetos JSON de las órdenes generadas
 const orders = [];
 
@@ -554,9 +556,10 @@ function createButton(text, onClick) {
   return button;
 }
 
-// Event listener for the generate PDF button
+// Event listener para el botón de generar pedido
 document.getElementById('createPdf').addEventListener('click', function () {
   generatePDF(); // Generar PDF de la orden actual
+  generateEmptyExcel(); // Generar Excel vacío de Prueba
   showOrdersList(); // Mostrar la lista de órdenes actualizada
   clearItems(); // Limpiar la lista de artículos seleccionados
 });
@@ -584,9 +587,9 @@ function generatePDF() {
 
     // Crear una nueva imagen
     var img = new Image();
-    img.src = './imgs/D_NQ_NP_601050-MLA41611637029_052020-O_auto_x2.png'; // Reemplaza 'ruta_a_tu_logo.png' con la ruta de tu logotipo
+    img.src = './imgs/D_NQ_NP_601050-MLA41611637029_052020-O_auto_x2.png';
 
-    // Cuando la imagen esté cargada, agrégala al PDF
+    // Cuando la imagen esté cargada, agrégala al PDF y genera el Blob del PDF
     img.onload = function () {
       doc.setFontSize(20);
       doc.text("Artículos seleccionados:", 10, 50);
@@ -600,7 +603,7 @@ function generatePDF() {
       });
 
       // Agregar el logotipo al PDF
-      doc.addImage(img, 'JPEG', 10, 10, 40, 20); // Ajusta las coordenadas y el tamaño del logotipo
+      doc.addImage(img, 'JPEG', 10, 10, 40, 20);
 
       // Generar el Blob del PDF
       const pdfBlob = doc.output('blob');
@@ -627,6 +630,50 @@ function generatePDF() {
   }
 }
 
+
+// Función para generar un archivo Excel vacío con SheetJS
+function generateEmptyExcel() {
+  try {
+    // Crear un libro de trabajo vacío
+    const wb = XLSX.utils.book_new();
+
+    // Crear una hoja de cálculo con los artículos seleccionados
+    const wsData = items.map(item => [item.name, item.amount]);
+    const ws = XLSX.utils.aoa_to_sheet([['Nombre del artículo', 'Cantidad'], ...wsData]);
+
+    // Agregar la hoja de cálculo al libro de trabajo
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    // Crear el array buffer del archivo Excel
+    const excelArrayBuffer = XLSX.write(wb, { bookType: 'xlsx', bookSST: false, type: 'array' });
+
+    // Convertir el array buffer a blob
+    const excelBlob = new Blob([new Uint8Array(excelArrayBuffer)], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+    // Guardar el objeto Blob (Excel) en el arreglo de excels
+    excels.push(excelBlob);
+
+    // Mostrar el Excel correspondiente a la orden
+    if (excels.length > 0) {
+      const excelURL = URL.createObjectURL(excels[excels.length - 1]);
+
+      // Crear un elemento de ancla (a) para iniciar la descarga
+      const a = document.createElement('a');
+      a.href = excelURL;
+      a.download = 'orden.xlsx'; // Puedes cambiar el nombre del archivo si lo deseas
+
+      // Simular un clic en el enlace para iniciar la descarga
+      a.click();
+
+      // Liberar el objeto URL
+      URL.revokeObjectURL(excelURL);
+    }
+  } catch (error) {
+    console.error('Error al generar el archivo Excel:', error);
+  }
+}
+
+
 // Function to clear the list of selected items
 function clearItems() {
   const itemList = document.getElementById("itemList");
@@ -636,7 +683,7 @@ function clearItems() {
   items = []; // Reiniciar el arreglo de artículos seleccionados
 }
 
-// Función para mostrar el listado de órdenes generadas
+// Actualiza la función showOrdersList para incluir el botón Ver Excel
 function showOrdersList() {
   const ordersList = document.getElementById('ordersList');
   ordersList.innerHTML = ''; // Limpiar el listado antes de mostrar las órdenes
@@ -656,6 +703,15 @@ function showOrdersList() {
       }
     });
 
+    // Crear un botón para ver el Excel de la orden
+    const viewExcelButton = createButton('Ver Excel', () => {
+      // Mostrar el Excel correspondiente a la orden
+      if (excels[index]) {
+        const excelURL = URL.createObjectURL(excels[index]);
+        window.open(excelURL);
+      }
+    });
+
     // Crear un botón para enviar por correo electrónico la orden
     const sendEmailButton = createButton('Enviar por correo electrónico', () => {
       console.log('Enviar por correo electrónico la orden #' + (index + 1));
@@ -670,6 +726,7 @@ function showOrdersList() {
 
     // Agregar los botones al elemento <li>
     orderItem.appendChild(viewPdfButton);
+    orderItem.appendChild(viewExcelButton);
     orderItem.appendChild(sendEmailButton);
     orderItem.appendChild(repeatOrderButton);
 
@@ -677,6 +734,7 @@ function showOrdersList() {
     ordersList.appendChild(orderItem);
   });
 }
+
 
 // Función para repetir una orden
 function repeatOrder(orderIndex) {
