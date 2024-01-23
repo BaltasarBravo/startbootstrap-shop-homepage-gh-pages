@@ -634,6 +634,12 @@ function generatePDF() {
 // Función para generar un archivo Excel vacío con SheetJS
 function generateEmptyExcel() {
   try {
+    // Verificar si hay artículos seleccionados antes de generar el Excel
+    if (items.length === 0) {
+      Swal.fire("Error", "Agrega al menos un artículo antes de generar el Excel", "error");
+      return; // Salir de la función si no hay artículos
+    }
+
     // Crear un libro de trabajo vacío
     const wb = XLSX.utils.book_new();
 
@@ -653,21 +659,11 @@ function generateEmptyExcel() {
     // Guardar el objeto Blob (Excel) en el arreglo de excels
     excels.push(excelBlob);
 
-    // Mostrar el Excel correspondiente a la orden
-    if (excels.length > 0) {
-      const excelURL = URL.createObjectURL(excels[excels.length - 1]);
+    // No descargar el archivo aquí, solo mostrar un mensaje o realizar otras acciones si es necesario
+    Swal.fire("Éxito", "La orden se ha generado correctamente", "success");
 
-      // Crear un elemento de ancla (a) para iniciar la descarga
-      const a = document.createElement('a');
-      a.href = excelURL;
-      a.download = 'orden.xlsx'; // Puedes cambiar el nombre del archivo si lo deseas
+    // Puedes realizar otras acciones aquí si es necesario
 
-      // Simular un clic en el enlace para iniciar la descarga
-      a.click();
-
-      // Liberar el objeto URL
-      URL.revokeObjectURL(excelURL);
-    }
   } catch (error) {
     console.error('Error al generar el archivo Excel:', error);
   }
